@@ -188,7 +188,6 @@ def ecrire_pi(approxpi, liste_image, pointeur, hauteur, longueur, taille):
     liste_indice_finale = []
 
     for k in range(len(str(approxpi))):
-        print(str(approxpi)[k])
         pointeur += longueur + 3
         if str(approxpi)[k] == ".":
             liste_indice_finale.append(pointeur + 3)
@@ -289,10 +288,12 @@ def generate_ppm_file(taille, nb_points_tot, nb_float):
         liste_image_fin = ecrire_pi(approxpi, liste_image, depart, hauteur, longueur, taille)
 
         #Creation image
-
-        nom = f'image{repetition}.ppm'
+        chaine = ""
+        liste_chiffre = [str(approxpi)[k] for k in range(1,len(str(approxpi)))]
+        for k in range(1,len(liste_chiffre)):
+            chaine += liste_chiffre[k]
+        nom = f'image{repetition}_{str(approxpi)[0]}-{chaine}.ppm'
         ecrire_fichier(nom, taille, liste_image_fin)
-        print("-------------")
 
 
 def creation_gif(les_images):
@@ -301,9 +302,9 @@ def creation_gif(les_images):
 
 
 if __name__ == "__main__":
-    # taille: argv[1], nbpoint: argv[2], nbfloat: argv[3]
-#    if int(argv[1])<100 or int(argv[2])<100 or 1 <=int(argv[1])<=5:
-#        raise ValueError
+    #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3]
+    if int(argv[1])<100 or int(argv[2])<100 or 1 <=int(argv[1])<=5:
+        raise ValueError
     start = time.time()
     generate_ppm_file(int(argv[1]),int(argv[2]), int(argv[3]))
     creation_gif("image*")
