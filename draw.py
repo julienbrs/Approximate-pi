@@ -143,7 +143,7 @@ def chiffre_8(hauteur, longueur, indice_depart, taille):
     liste_indice += liste_temp
     liste_temp = barre_horizontale(longueur, pointeur)[0]
     liste_indice += liste_temp
-    liste_temp,pointeur = barre_horizontale(longueur, indice_depart)
+    liste_temp, pointeur = barre_horizontale(longueur, indice_depart)
     liste_indice += liste_temp
     liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
     liste_indice += liste_temp
@@ -161,7 +161,7 @@ def chiffre_9(hauteur, longueur, indice_depart, taille):
     pointeur = pointeur - longueur
     liste_temp = barre_horizontale(longueur, pointeur)[0]
     liste_indice += liste_temp
-    liste_temp, pointeur= barre_verticale(hauteur, pointeur, taille)
+    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
     liste_indice += liste_temp
     liste_temp = barre_horizontale(longueur, pointeur)[0]
     liste_indice += liste_temp
@@ -186,7 +186,6 @@ def chiffre_0(hauteur, longueur, indice_depart, taille):
 def ecrire_pi(approxpi, liste_image, pointeur, hauteur, longueur, taille):
     "ecrit les nombres"
     liste_indice_finale = []
-
     for k in range(len(str(approxpi))):
         pointeur += longueur + 3
         if str(approxpi)[k] == ".":
@@ -222,7 +221,7 @@ def conversion_en_px(taille, liste):
     for coord in liste:
         x_abs = int(coord[0]*taille/2 + taille/2)
         y_ord = int(-(coord[1]*taille/2 - taille/2))
-        liste_px.append([x_abs,y_ord, coord[2]])
+        liste_px.append([x_abs, y_ord, coord[2]])
     return liste_px
 
 
@@ -238,7 +237,7 @@ def dictionnaire_none(taille):
 
 def ecrire_fichier(nom, taille, liste_image):
     "Ecrit dans le fichier l'image correspodante d'après la liste"
-    with open(nom,'w', encoding='UTF-8') as fichier:
+    with open(nom, 'w', encoding='UTF-8') as fichier:
         fichier.write('P3\n')
         fichier.write(str(taille))
         fichier.write(" ")
@@ -258,12 +257,15 @@ def ecrire_fichier(nom, taille, liste_image):
 def generate_ppm_file(taille, nb_points_tot, nb_float):
     "genere le l'image, core de la fonction"
     # Conversion d'UA en pixels
-    for repetition in range(1,11):
-        nb_points = repetition*int(nb_points_tot/10)
-        liste_debut, approxpi = approximate_pi.approximation(nb_points)
+    liste_px = []
+    for repetition in range(1, 11):
+        liste_image = []
+        #nb_points = repetition*int(nb_points_tot/10)
+        approxpi = approximate_pi.calcule_pi(int(repetition*nb_points_tot/10))
+        liste_debut = approximate_pi.approximation(int(nb_points_tot/10))[0]
         approxpi = round(approxpi, nb_float)
 
-        liste_px = conversion_en_px(taille, liste_debut)
+        liste_px += conversion_en_px(taille, liste_debut)
 
         #création dictionnaire contenant coordonnée  + couleur (tout blanc à start)
         dictionnaire_points = dictionnaire_none(taille)
@@ -276,39 +278,38 @@ def generate_ppm_file(taille, nb_points_tot, nb_float):
         #Faire correspondance entre coord et index sur l'image:
         liste_image = taille**2 * [None]
         for coord in dictionnaire_points:
-            x_abs, y_ord = int(str.split(coord, sep = ",")[0]), int(str.split(coord, sep = ",")[1])
+            x_abs, y_ord = int(str.split(coord, sep=",")[0]), int(str.split(coord, sep=",")[1])
 
-            #indexpx = int(y_ord*taille + x+1)
+            #inprint(f'Temps d\'exécution : {temps_exec:.2}ms')dexpx = int(y_ord*taille + x+1)
             liste_image[y_ord*taille + x_abs] = dictionnaire_points[coord]
-
         #écriture de pi
         longueur = int(0.2*taille/(nb_float+1))
         hauteur = int(longueur*1.2)
-        depart = int((taille/2)*taille + taille/4 +1 )
-        liste_image_fin = ecrire_pi(approxpi, liste_image, depart, hauteur, longueur, taille)
-
+        depart = int((taille/2)*taille + taille/4 +1)
+        liste_image_chiffre = ecrire_pi(approxpi, liste_image, depart, hauteur, longueur, taille)
         #Creation image
         chaine = ""
-        liste_chiffre = [str(approxpi)[k] for k in range(1,len(str(approxpi)))]
-        for k in range(1,len(liste_chiffre)):
+        liste_chiffre = [str(approxpi)[k] for k in range(1, len(str(approxpi)))]
+        for k in range(1, len(liste_chiffre)):
             chaine += liste_chiffre[k]
         nom = f'image{repetition}_{str(approxpi)[0]}-{chaine}.ppm'
-        ecrire_fichier(nom, taille, liste_image_fin)
+        ecrire_fichier(nom, taille, liste_image_chiffre)
+
 
 
 def creation_gif(les_images):
     "créé un gif à partir des images"
-    subprocess.call ("convert -delay 50 " + les_images + " legif.gif" , shell = True)
+    subprocess.call("convert -delay 50 " + les_images + " legif.gif", shell=True)
 
 
 if __name__ == "__main__":
     #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3]
-    if int(argv[1])<100 or int(argv[2])<100 or 1 <=int(argv[1])<=5:
+    if int(argv[1]) < 100 or int(argv[2]) < 100 or 1 <= int(argv[1]) <= 5:
         raise ValueError
     start = time.time()
-    generate_ppm_file(int(argv[1]),int(argv[2]), int(argv[3]))
+    generate_ppm_file(int(argv[1]), int(argv[2]), int(argv[3]))
     creation_gif("image*")
     end = time.time()
     temps_exec = end - start
+print(f'Temps d\'exécution : {temps_exec} s')
 
-print(f'Temps d\'exécution : {temps_exec:.2}ms')
