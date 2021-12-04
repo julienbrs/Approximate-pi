@@ -3,7 +3,7 @@
 """ Hello """
 from random import uniform
 from sys import argv
-import time
+#import time
 
 def approximation_liste(nombre):
     "approxime pi en fonction de n, retourne les points et dit s'ils sont dans le cercle"
@@ -45,8 +45,4 @@ def main(nombre):
 #    return 4*compteur/(repetition*nombre), compteur
 
 if __name__ == "__main__":
-    start = time.time()
     main(int(argv[1]))
-    end = time.time()
-    temps_exec = end - start
-    print(f'Temps d\'exécution : {temps_exec} s')
