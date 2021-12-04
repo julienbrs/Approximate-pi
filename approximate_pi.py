@@ -5,33 +5,48 @@ from random import uniform
 from sys import argv
 import time
 
-def approximation(n):
+def approximation_liste(nombre):
     "approxime pi en fonction de n, retourne les points et dit s'ils sont dans le cercle"
-    L = []
+    liste = []
     compteur = 0
-    for _ in range(0, n):
+    for _ in range(0, nombre):
         x_abscisse = uniform(-1, 1)
         y_abscisse = uniform(-1, 1)
         if x_abscisse**2 + y_abscisse**2 <= 1:
-            L.append([x_abscisse, y_abscisse, True])
+            liste.append([x_abscisse, y_abscisse, True])
             compteur += 1
         else:
-            L.append([x_abscisse, y_abscisse, False])
-    return L, 4*compteur/n
+            liste.append([x_abscisse, y_abscisse, False])
+    return liste, 4*compteur/nombre
 
-def calcule_pi(n):
+def main(nombre):
     "approxime pi en fonction de n"
     compteur = 0
-    for _ in range(0, n):
+    for _ in range(0, nombre):
         x_abscisse = uniform(-1, 1)
         y_abscisse = uniform(-1, 1)
         if x_abscisse**2 + y_abscisse**2 <= 1:
             compteur += 1
-    return 4*compteur/n
+    return 4*compteur/nombre
+
+#def calcul_pi(nombre, compteur_ancien, repetition):
+#    "approxime pi en fonction de n"
+#    compteur = 0
+#    print(compteur_ancien)
+#    print(nombre)
+#    print(nombre*repetition)
+#    for _ in range(0, nombre):
+#        x_abscisse = uniform(-1, 1)
+#        y_abscisse = uniform(-1, 1)
+#        if x_abscisse**2 + y_abscisse**2 <= 1:
+#            compteur += 1
+#    compteur += compteur_ancien
+#    print("---")
+#    return 4*compteur/(repetition*nombre), compteur
 
 if __name__ == "__main__":
     start = time.time()
+    main(int(argv[1]))
     end = time.time()
     temps_exec = end - start
-    approximation(int(argv[1]))
-    print(f'Temps d\'exécution : {temps_exec:.2}ms')
+    print(f'Temps d\'exécution : {temps_exec} s')

@@ -257,31 +257,27 @@ def ecrire_fichier(nom, taille, liste_image):
 def generate_ppm_file(taille, nb_points_tot, nb_float):
     "genere le l'image, core de la fonction"
     # Conversion d'UA en pixels
-    liste_px = []
-    for repetition in range(1, 11):
-        liste_image = []
-        #nb_points = repetition*int(nb_points_tot/10)
-        approxpi = approximate_pi.calcule_pi(int(repetition*nb_points_tot/10))
-        liste_debut = approximate_pi.approximation(int(nb_points_tot/10))[0]
+    liste_image = taille**2 * [None]
+    dictionnaire_points = dictionnaire_none(taille)
+    for repetition in range(0, 10):
+        approxpi = approximate_pi.main(int(nb_points_tot/10)*(repetition+1))
+        liste_debut = approximate_pi.approximation_liste(int(nb_points_tot/10))[0]
         approxpi = round(approxpi, nb_float)
-
-        liste_px += conversion_en_px(taille, liste_debut)
-
+        liste_px = conversion_en_px(taille, liste_debut)
         #création dictionnaire contenant coordonnée  + couleur (tout blanc à start)
-        dictionnaire_points = dictionnaire_none(taille)
+
 
         #On change la couleur pour les points qui sont dans la liste_px
         for points in liste_px:
             #0 abscsse, 1 ord
             dictionnaire_points[str(points[0]) + "," + str(points[1])] = points[2]
-
         #Faire correspondance entre coord et index sur l'image:
-        liste_image = taille**2 * [None]
         for coord in dictionnaire_points:
             x_abs, y_ord = int(str.split(coord, sep=",")[0]), int(str.split(coord, sep=",")[1])
 
             #inprint(f'Temps d\'exécution : {temps_exec:.2}ms')dexpx = int(y_ord*taille + x+1)
             liste_image[y_ord*taille + x_abs] = dictionnaire_points[coord]
+
         #écriture de pi
         longueur = int(0.2*taille/(nb_float+1))
         hauteur = int(longueur*1.2)
@@ -296,7 +292,6 @@ def generate_ppm_file(taille, nb_points_tot, nb_float):
         ecrire_fichier(nom, taille, liste_image_chiffre)
 
 
-
 def creation_gif(les_images):
     "créé un gif à partir des images"
     subprocess.call("convert -delay 50 " + les_images + " legif.gif", shell=True)
@@ -306,10 +301,6 @@ if __name__ == "__main__":
     #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3]
     if int(argv[1]) < 100 or int(argv[2]) < 100 or 1 <= int(argv[1]) <= 5:
         raise ValueError
-    start = time.time()
     generate_ppm_file(int(argv[1]), int(argv[2]), int(argv[3]))
     creation_gif("image*")
-    end = time.time()
-    temps_exec = end - start
-print(f'Temps d\'exécution : {temps_exec} s')
 
