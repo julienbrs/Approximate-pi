@@ -8,16 +8,14 @@ from sys import argv
 def approximation_liste(nombre):
     "approxime pi en fonction de n, retourne les points et dit s'ils sont dans le cercle"
     liste = []
-    compteur = 0
-    for _ in range(0, nombre):
+    for _ in range(nombre):
         x_abscisse = uniform(-1, 1)
         y_abscisse = uniform(-1, 1)
         if x_abscisse**2 + y_abscisse**2 <= 1:
             liste.append([x_abscisse, y_abscisse, True])
-            compteur += 1
         else:
             liste.append([x_abscisse, y_abscisse, False])
-    return liste, 4*compteur/nombre
+    return liste
 
 def main(nombre):
     "approxime pi en fonction de n"
