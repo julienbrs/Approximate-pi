@@ -1,46 +1,37 @@
 #!/usr/bin/env python3
 
-""" Hello """
-from random import uniform
-from sys import argv
-#import time
 
-def approximation_liste(nombre):
+"""
+Utile pour savoir le temps pris par mes fonctions
+lors d'une execution
+"""
+
+import random as rd
+from random import random
+from sys import argv
+
+def approximation_liste(nombre, taille):
     "approxime pi en fonction de n, retourne les points et dit s'ils sont dans le cercle"
-    liste = []
-    for _ in range(nombre):
-        x_abscisse = uniform(-1, 1)
-        y_abscisse = uniform(-1, 1)
-        if x_abscisse**2 + y_abscisse**2 <= 1:
-            liste.append([x_abscisse, y_abscisse, True])
+    liste = nombre * [None]
+    for k in range(nombre):
+        x_abscisse = random()*2 -1
+        y_abscisse = random()*2 -1
+        if x_abscisse*x_abscisse + y_abscisse*y_abscisse <= 1:
+            liste[k] = [int(x_abscisse*taille/2 + taille/2), int(-y_abscisse*taille/2 + taille/2), True]
         else:
-            liste.append([x_abscisse, y_abscisse, False])
+            liste[k] = [int(x_abscisse*taille/2 + taille/2), int(-y_abscisse*taille/2 + taille/2), False]
     return liste
 
-def main(nombre):
+def approximation(nombre):
     "approxime pi en fonction de n"
     compteur = 0
     for _ in range(0, nombre):
-        x_abscisse = uniform(-1, 1)
-        y_abscisse = uniform(-1, 1)
-        if x_abscisse**2 + y_abscisse**2 <= 1:
+        x_abscisse = rd.random()*2 -1
+        y_abscisse = rd.random()*2 -1
+        if x_abscisse*x_abscisse + y_abscisse*y_abscisse <= 1:
             compteur += 1
-    return 4*compteur/nombre
-
-#def calcul_pi(nombre, compteur_ancien, repetition):
-#    "approxime pi en fonction de n"
-#    compteur = 0
-#    print(compteur_ancien)
-#    print(nombre)
-#    print(nombre*repetition)
-#    for _ in range(0, nombre):
-#        x_abscisse = uniform(-1, 1)
-#        y_abscisse = uniform(-1, 1)
-#        if x_abscisse**2 + y_abscisse**2 <= 1:
-#            compteur += 1
-#    compteur += compteur_ancien
-#    print("---")
-#    return 4*compteur/(repetition*nombre), compteur
+    print(4*compteur/nombre)
 
 if __name__ == "__main__":
-    main(int(argv[1]))
+
+    approximation(int(argv[1]))

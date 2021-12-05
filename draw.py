@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=too-many-locals
 
-
 """ reçoit 3 arguments dans l'ordre suivant depuis la ligne de commande :
 la taille de l'image en pixels, qui est carrée donc un seul entier qui devra être supérieur ou
 égale à 100 ;
@@ -9,20 +8,17 @@ le nombre de point n à utiliser dans la simulation, qui devra être supérieur 
 le nombre de chiffres après la virgule à utiliser dans l'affichage de la valeur approximative
 de π, qui devra être compris entre 1 et 5
 """
+
 from sys import argv
 import subprocess
-import time
 import approximate_pi
-
-# https://www.geeksforgeeks.org/complexity-cheat-sheet-for-python-operations/
 
 
 def barre_horizontale(longueur, indice_depart):
     """longueur = longueur de la barre en pixels, départ = coord du pixel,
     la barre commencera de celui ci par son
     extrémité gauche; taille de l'image"""
-    liste_indice = []
-    liste_indice.append(indice_depart)
+    liste_indice = [indice_depart]
     for _ in range(longueur):
         indice_depart += 1
         liste_indice.append(indice_depart)
@@ -35,9 +31,7 @@ def barre_verticale(hauteur, indice_depart, taille):
     """hauteur = hauteur de la barre en pixels, départ = coord du pixel,
     la barre commencera par son
     extrémité basse; taille de l'image"""
-    liste_indice = []
-
-    liste_indice.append(indice_depart)
+    liste_indice = [indice_depart]
     for _ in range(hauteur):
         indice_depart -= taille
         liste_indice.append(indice_depart)
@@ -210,17 +204,6 @@ def ecrire_pi(approxpi, liste_image, pointeur, hauteur, longueur, taille):
         liste_image[chiffre] = "Black"
     return liste_image
 
-
-def conversion_en_px(taille, liste):
-    "Convertie point dans [-1;1]² en coord px"
-    liste_px = []
-    for coord in liste:
-        x_abs = int(coord[0]*taille/2 + taille/2)
-        y_ord = int(-(coord[1]*taille/2 - taille/2))
-        liste_px.append([x_abs, y_ord, coord[2]])
-    return liste_px
-
-
 def dictionnaire_none(taille):
     "crée un dictionnaire avec coord dans l'ordre et None en attribut"
     dictionnaire = {}
@@ -234,35 +217,34 @@ def dictionnaire_none(taille):
 def ecrire_fichier(nom, taille, liste_image):
     "Ecrit dans le fichier l'image correspodante d'après la liste"
     with open(nom, 'w', encoding='UTF-8') as fichier:
-        fichier.write('P3\n')
+        fichier.write('P2\n')
         fichier.write(str(taille))
         fichier.write(" ")
         fichier.write(str(taille))
-        fichier.write("\n255\n")
+        fichier.write(" 3\n")
         for point in liste_image:
             if point is None:
-                fichier.write("255 255 255\n")
+                fichier.write("1\n")
             if point is True:
-                fichier.write("0 255 0\n")    #Jaune
+                fichier.write("2\n")    #Jaune
             elif point is False:
-                fichier.write("255 0 0\n") #Rouge
+                fichier.write("3\n") #Rouge
             elif point == "Black":
-                fichier.write("0 0 0\n") #Rouge
+                fichier.write("0\n") #Rouge
 
 
 def generate_ppm_file(taille, nb_points_tot, nb_float):
     "genere le l'image, core de la fonction"
     # Conversion d'UA en pixels
-    liste_image = taille**2 * [None]
+    liste_image = taille*taille * [None]
     dictionnaire_points = dictionnaire_none(taille)
     longueur = int(0.2*taille/(nb_float+1))
     hauteur = int(longueur*1.2)
-    depart = int((taille/2)*taille + taille/4 +1)
+    depart = int((taille/2)*taille + taille/3 +1)
     for repetition in range(0, 10):
-        approxpi = approximate_pi.main(int(nb_points_tot/10)*(repetition+1))
-        liste_debut = approximate_pi.approximation_liste(int(nb_points_tot/10))
+        approxpi = approximate_pi.approximation(int(nb_points_tot/10)*(repetition+1))
+        liste_px = approximate_pi.approximation_liste(int(nb_points_tot/10), taille)
         approxpi = round(approxpi, nb_float)
-        liste_px = conversion_en_px(taille, liste_debut)
         #création dictionnaire contenant coordonnée  + couleur (tout blanc à start)
 
 
@@ -284,7 +266,7 @@ def generate_ppm_file(taille, nb_points_tot, nb_float):
         liste_chiffre = [str(approxpi)[k] for k in range(1, len(str(approxpi)))]
         for k in range(1, len(liste_chiffre)):
             chaine += liste_chiffre[k]
-        nom = f'image{repetition}_{str(approxpi)[0]}-{chaine}.ppm'
+        nom = f'img{repetition}_{str(approxpi)[0]}-{chaine}.ppm'
         ecrire_fichier(nom, taille, liste_image_chiffre)
         nom = f"toto{repetition}_{longueur:.{hauteur}f}".replace('.', '-')
 
@@ -293,14 +275,15 @@ def creation_gif(les_images):
     "créé un gif à partir des images"
     subprocess.call("convert -delay 50 " + les_images + " legif.gif", shell=True)
 
-
-if __name__ == "__main__":
+def main():
+    "main"
     #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3]
     if int(argv[1]) < 100 or int(argv[2]) < 100 or not 1 <= int(argv[3]) <= 5:
         raise ValueError
-    start = time.time()
     generate_ppm_file(int(argv[1]), int(argv[2]), int(argv[3]))
-    creation_gif("image*")
-    end = time.time()
-    temps_exec = end - start
-    print(f'Temps d\'exécution : {temps_exec} s')
+    creation_gif("img*")
+
+
+
+if __name__ == "__main__":
+    main()
