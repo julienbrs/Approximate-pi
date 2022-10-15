@@ -44,7 +44,7 @@
 ## About The Project
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
-Approximation of the value of pi by the Monte Carlo method. The graphical display is done with the `main.py` script while the approximation of the value can be done independently with `approximation.py`. Developed in python
+Approximation of the value of pi by the Monte Carlo method. The graphical display is done with the `draw.py` script while the approximation of the value can be done independently with `approximation.py`. Developed in python
 
 <br />
 <p align="center">
@@ -78,12 +78,12 @@ To get a local copy up and running follow these simple example steps.
    ```
 2. Rights to execute
    ```sh
-   chmod +x main.py
+   chmod +x draw.py
    chmod +x approximate_pi.py
    ```
 3. Then run the program, see more info about parameters in the [Usage](#usage) section
    ```sh
-   ./main.py 600 5000 5
+   ./draw.py 600 5000 5
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -96,13 +96,13 @@ By running `approximate.pi` directly, you need to put the number of points as a 
 
 ![screenshot approximation.py result](ressources/approx_cmd.png)
 
-By running `main.py`, you need to put:
+By running `draw.py`, you need to put:
 - the size of output image result
 - the number of points
 - the number of digits after the decimal point
 - optional parameter: `false` to disable cleaning of the last result
 ```sh
-./main.py 600 5000 5
+./draw.py 600 5000 5
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
