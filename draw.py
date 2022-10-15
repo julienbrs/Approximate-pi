@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
 
 """ reçoit 3 arguments dans l'ordre suivant depuis la ligne de commande :
 la taille de l'image en pixels, qui est carrée donc un seul entier qui devra être supérieur ou
@@ -9,7 +10,7 @@ le nombre de chiffres après la virgule à utiliser dans l'affichage de la valeu
 de π, qui devra être compris entre 1 et 5
 """
 
-from sys import argv
+import sys
 import subprocess
 import approximate_pi
 
@@ -198,7 +199,8 @@ def ecrire_pi(approxpi, liste_image, pointeur, hauteur, longueur, taille):
         if str(approxpi)[k] == ".":
             liste_indice_finale.append(pointeur + 3)
         else:
-            liste_indice_finale += dictionnaire_fonction[int(str(approxpi)[k])](hauteur, longueur, pointeur, taille)
+            liste_indice_finale += dictionnaire_fonction[int(str(approxpi)[k])](hauteur,
+             longueur, pointeur, taille)
 
     for chiffre in liste_indice_finale:
         liste_image[chiffre] = "Black"
@@ -268,20 +270,29 @@ def generate_ppm_file(taille, nb_points_tot, nb_float):
             chaine += liste_chiffre[k]
         nom = f'img{repetition}_{str(approxpi)[0]}-{chaine}.ppm'
         ecrire_fichier(nom, taille, liste_image_chiffre)
-        nom = f"toto{repetition}_{longueur:.{hauteur}f}".replace('.', '-')
 
 
 def creation_gif(les_images):
     "créé un gif à partir des images"
-    subprocess.call("convert -delay 50 " + les_images + " legif.gif", shell=True)
+    subprocess.call("convert -delay 50 " + les_images + " result.gif", shell=True)
 
 def main():
     "main"
-    #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3]
-    if int(argv[1]) < 100 or int(argv[2]) < 100 or not 1 <= int(argv[3]) <= 5:
+    #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3], clean: argv[4]
+    if len(sys.argv) != 4:
+        print("Erreur, il faut 3 arguments: taille, nb_points, nb_float")
+        sys.exit(1)
+
+    elif int(sys.argv[1]) < 100 or int(sys.argv[2]) < 100 or not 1 <= int(sys.argv[3]) <= 5:
         raise ValueError
-    generate_ppm_file(int(argv[1]), int(argv[2]), int(argv[3]))
+
+    elif len(sys.argv) == 4 or sys.argv[5] != "false":
+        subprocess.call("rm result_images/img*.ppm", shell=True)
+        subprocess.call("rm result.gif", shell=True)
+
+    generate_ppm_file(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]))
     creation_gif("img*")
+    subprocess.call("mv img* result_images", shell=True)
 
 
 

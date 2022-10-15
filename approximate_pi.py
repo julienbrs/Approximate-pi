@@ -17,9 +17,11 @@ def approximation_liste(nombre, taille):
         x_abscisse = random()*2 -1
         y_abscisse = random()*2 -1
         if x_abscisse*x_abscisse + y_abscisse*y_abscisse <= 1:
-            liste[k] = [int(x_abscisse*taille/2 + taille/2), int(-y_abscisse*taille/2 + taille/2), True]
+            liste[k] = [int(x_abscisse*taille/2 + taille/2),
+                         int(-y_abscisse*taille/2 + taille/2), True]
         else:
-            liste[k] = [int(x_abscisse*taille/2 + taille/2), int(-y_abscisse*taille/2 + taille/2), False]
+            liste[k] = [int(x_abscisse*taille/2 + taille/2),
+                         int(-y_abscisse*taille/2 + taille/2), False]
     return liste
 
 def approximation(nombre):
@@ -43,5 +45,4 @@ def main_fonction(nombre):
     print(4*compteur/nombre)
 
 if __name__ == "__main__":
-
     main_fonction(int(argv[1]))
