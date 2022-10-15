@@ -2,12 +2,13 @@
 # pylint: disable=too-many-arguments
 #pylint: disable=too-many-locals
 
-""" reçoit 3 arguments dans l'ordre suivant depuis la ligne de commande :
-la taille de l'image en pixels, qui est carrée donc un seul entier qui devra être supérieur ou
-égale à 100 ;
-le nombre de point n à utiliser dans la simulation, qui devra être supérieur à 100 ;
-le nombre de chiffres après la virgule à utiliser dans l'affichage de la valeur approximative
-de π, qui devra être compris entre 1 et 5
+""" receives 3 arguments in the following order from the command line:
+the size of the image in pixels, which is square so a single integer that must be greater than or
+equal to 100 ;
+the number of points n to use in the simulation, which must be greater than 100;
+the number of digits after the decimal point to be used in the display of the approximate value
+of π, which must be between 1 and 5
+
 """
 
 import sys
@@ -15,272 +16,275 @@ import subprocess
 import approximate_pi
 
 
-def barre_horizontale(longueur, indice_depart):
-    """longueur = longueur de la barre en pixels, départ = coord du pixel,
-    la barre commencera de celui ci par son
-    extrémité gauche; taille de l'image"""
-    liste_indice = [indice_depart]
-    for _ in range(longueur):
-        indice_depart += 1
-        liste_indice.append(indice_depart)
+def horizontal_bar(length, start_index):
+    """ length = length of the bar in pixels, start = coord of the pixel,
+    the bar will start from this one by its left end; size of the output image"""
+    list_index = [start_index]
+    for _ in range(length):
+        start_index += 1
+        list_index.append(start_index)
 
-    indice_fin = liste_indice[-1]
-    return liste_indice, indice_fin
-
-
-def barre_verticale(hauteur, indice_depart, taille):
-    """hauteur = hauteur de la barre en pixels, départ = coord du pixel,
-    la barre commencera par son
-    extrémité basse; taille de l'image"""
-    liste_indice = [indice_depart]
-    for _ in range(hauteur):
-        indice_depart -= taille
-        liste_indice.append(indice_depart)
-
-    indice_fin = liste_indice[-1]
-    return liste_indice, indice_fin
+    end_index = list_index[-1]
+    return list_index, end_index
 
 
-def chiffre_1(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 1"
+def vertical_bar(height, start_index, size):
+    """ height = height of the bar in pixels, start = coordinate of the pixel,
+    the bar will start at its bottom end; size of the output image
+    """
+    list_index = [start_index]
+    for _ in range(height):
+        start_index -= size
+        list_index.append(start_index)
 
-    liste_indice, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_indice += barre_verticale(hauteur, pointeur, taille)[0]
-    taille = longueur
-    return liste_indice
-
-def chiffre_2(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 2"
-    liste_indice = barre_horizontale(longueur, indice_depart)[0]
-    liste_temp, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_horizontale(longueur, pointeur)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    pointeur = pointeur - longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
-
-def chiffre_3(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 3"
-    liste_indice, pointeur = barre_horizontale(longueur, indice_depart)
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    pointeur -= longueur
-    liste_temp, pointeur = barre_horizontale(longueur, pointeur)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    pointeur -= longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
-
-def chiffre_4(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 4"
-    indice_depart += longueur
-    liste_indice, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_temp = barre_verticale(hauteur, pointeur, taille)[0]
-    liste_indice += liste_temp
-    pointeur -= longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    liste_temp = barre_verticale(hauteur, pointeur, taille)[0]
-    liste_indice += liste_temp
-    return liste_indice
-
-def chiffre_5(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 5"
-    liste_indice, pointeur = barre_horizontale(longueur, indice_depart)
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    pointeur -= longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
+    end_index = list_index[-1]
+    return list_index, end_index
 
 
-def chiffre_6(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 6"
-    liste_indice, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_temp = barre_verticale(hauteur, pointeur, taille)[0]
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_horizontale(longueur, indice_depart)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    pointeur -= longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
+def digit_1(height, _ , start_index, size):
+    "write  digit 1"
 
-def chiffre_7(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 7"
-    indice_depart += longueur
-    liste_indice, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    pointeur -= longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
+    list_index, pointeur = vertical_bar(height, start_index, size)
+    list_index += vertical_bar(height, pointeur, size)[0]
+    return list_index
 
-def chiffre_8(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 8"
-    liste_indice, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_horizontale(longueur, indice_depart)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp = barre_verticale(hauteur, pointeur, taille)[0]
-    liste_indice += liste_temp
-    return liste_indice
+def digit_2(height, length, start_index, size):
+    "write  digit 2"
+    list_index = horizontal_bar(length, start_index)[0]
+    list_temp, pointeur = vertical_bar(height, start_index, size)
+    list_index += list_temp
+    list_temp, pointeur = horizontal_bar(length, pointeur)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    pointeur = pointeur - length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
 
-def chiffre_9(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 9"
-    liste_indice, pointeur = barre_horizontale(longueur, indice_depart)
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp = barre_verticale(hauteur, pointeur, taille)[0]
-    liste_indice += liste_temp
-    pointeur = pointeur - longueur
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
+def digit_3(height, length, start_index, size):
+    "write  digit 3"
+    list_index, pointeur = horizontal_bar(length, start_index)
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    pointeur -= length
+    list_temp, pointeur = horizontal_bar(length, pointeur)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    pointeur -= length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
 
-def chiffre_0(hauteur, longueur, indice_depart, taille):
-    "écrit le chiffre 0"
-    liste_indice, pointeur = barre_horizontale(longueur, indice_depart)
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, indice_depart, taille)
-    liste_indice += liste_temp
-    liste_temp, pointeur = barre_verticale(hauteur, pointeur, taille)
-    liste_indice += liste_temp
-    liste_temp = barre_horizontale(longueur, pointeur)[0]
-    liste_indice += liste_temp
-    return liste_indice
+def digit_4(height, length, start_index, size):
+    "write  digit 4"
+    start_index += length
+    list_index, pointeur = vertical_bar(height, start_index, size)
+    list_temp = vertical_bar(height, pointeur, size)[0]
+    list_index += list_temp
+    pointeur -= length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    list_temp = vertical_bar(height, pointeur, size)[0]
+    list_index += list_temp
+    return list_index
+
+def digit_5(height, length, start_index, size):
+    "write  digit 5"
+    list_index, pointeur = horizontal_bar(length, start_index)
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    pointeur -= length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
 
 
-def ecrire_pi(approxpi, liste_image, pointeur, hauteur, longueur, taille):
-    "ecrit les nombres"
-    liste_indice_finale = []
-    dictionnaire_fonction = {}
-    dictionnaire_fonction[0] = chiffre_0
-    dictionnaire_fonction[1] = chiffre_1
-    dictionnaire_fonction[2] = chiffre_2
-    dictionnaire_fonction[3] = chiffre_3
-    dictionnaire_fonction[4] = chiffre_4
-    dictionnaire_fonction[5] = chiffre_5
-    dictionnaire_fonction[6] = chiffre_6
-    dictionnaire_fonction[7] = chiffre_7
-    dictionnaire_fonction[8] = chiffre_8
-    dictionnaire_fonction[9] = chiffre_9
+def digit_6(height, length, start_index, size):
+    "write  digit 6"
+    list_index, pointeur = vertical_bar(height, start_index, size)
+    list_temp = vertical_bar(height, pointeur, size)[0]
+    list_index += list_temp
+    list_temp, pointeur = horizontal_bar(length, start_index)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    pointeur -= length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
+
+def digit_7(height, length, start_index, size):
+    "write  digit 7"
+    start_index += length
+    list_index, pointeur = vertical_bar(height, start_index, size)
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    pointeur -= length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
+
+def digit_8(height, length, start_index, size):
+    "write  digit 8"
+    list_index, pointeur = vertical_bar(height, start_index, size)
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    list_temp, pointeur = horizontal_bar(length, start_index)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp = vertical_bar(height, pointeur, size)[0]
+    list_index += list_temp
+    return list_index
+
+def digit_9(height, length, start_index, size):
+    "write  digit 9"
+    list_index, pointeur = horizontal_bar(length, start_index)
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp = vertical_bar(height, pointeur, size)[0]
+    list_index += list_temp
+    pointeur = pointeur - length
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
+
+def digit_0(height, length, start_index, size):
+    "write  digit 0"
+    list_index, pointeur = horizontal_bar(length, start_index)
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, start_index, size)
+    list_index += list_temp
+    list_temp, pointeur = vertical_bar(height, pointeur, size)
+    list_index += list_temp
+    list_temp = horizontal_bar(length, pointeur)[0]
+    list_index += list_temp
+    return list_index
+
+
+def write_pi(approxpi, list_image, pointeur, height, length, size):
+    "write numbers"
+    list_index_finale = []
+    dictionnary_fonction = {}
+    dictionnary_fonction[0] = digit_0
+    dictionnary_fonction[1] = digit_1
+    dictionnary_fonction[2] = digit_2
+    dictionnary_fonction[3] = digit_3
+    dictionnary_fonction[4] = digit_4
+    dictionnary_fonction[5] = digit_5
+    dictionnary_fonction[6] = digit_6
+    dictionnary_fonction[7] = digit_7
+    dictionnary_fonction[8] = digit_8
+    dictionnary_fonction[9] = digit_9
+
     for k in range(len(str(approxpi))):
-        pointeur += longueur + 6
+        pointeur += length + 6
         if str(approxpi)[k] == ".":
-            liste_indice_finale.append(pointeur + 3)
+            list_index_finale.append(pointeur + 3)
+            list_index_finale.append(pointeur + 4)
+            list_index_finale.append(pointeur + 3 - size)
+            list_index_finale.append(pointeur + 4 - size)
+            
         else:
-            liste_indice_finale += dictionnaire_fonction[int(str(approxpi)[k])](hauteur,
-             longueur, pointeur, taille)
+            list_index_finale += dictionnary_fonction[int(str(approxpi)[k])](height,
+             length, pointeur, size)
 
-    for chiffre in liste_indice_finale:
-        liste_image[chiffre] = "Black"
-    return liste_image
+    for digit in list_index_finale:
+        list_image[digit] = "Black"
+    return list_image
 
-def dictionnaire_none(taille):
-    "crée un dictionnaire avec coord dans l'ordre et None en attribut"
-    dictionnaire = {}
-    for j in range(taille):
-        for i in range(taille):
+def dictionnary_none(size):
+    "creates a dictionary with coord in order and None in attribute"
+    dictionnary = {}
+    for j in range(size):
+        for i in range(size):
             string = str(i) + "," + str(j)
-            dictionnaire[string] = None
-    return dictionnaire
+            dictionnary[string] = None
+    return dictionnary
 
 
-def ecrire_fichier(nom, taille, liste_image):
-    "Ecrit dans le fichier l'image correspodante d'après la liste"
+def write_file(nom, size, list_image):
+    "Write in the file the corresponding image according to the list"
     with open(nom, 'w', encoding='UTF-8') as fichier:
         fichier.write('P2\n')
-        fichier.write(str(taille))
+        fichier.write(str(size))
         fichier.write(" ")
-        fichier.write(str(taille))
-        fichier.write(" 3\n")
-        for point in liste_image:
+        fichier.write(str(size))
+        fichier.write(" 10\n")
+        for point in list_image:
             if point is None:
-                fichier.write("1\n")
+                fichier.write("8\n")    # Almost white is the color of the background
             if point is True:
-                fichier.write("2\n")    #Jaune
+                fichier.write("10\n")    # White when in circle
             elif point is False:
-                fichier.write("3\n") #Rouge
+                fichier.write("5\n")    # Grey when out of circle
             elif point == "Black":
-                fichier.write("0\n") #Rouge
+                fichier.write("0\n")    # Black
 
 
-def generate_ppm_file(taille, nb_points_tot, nb_float):
-    "genere le l'image, core de la fonction"
-    # Conversion d'UA en pixels
-    liste_image = taille*taille * [None]
-    dictionnaire_points = dictionnaire_none(taille)
-    longueur = int(0.2*taille/(nb_float+1))
-    hauteur = int(longueur*1.2)
-    depart = int((taille/2)*taille + taille/3 +1)
+def generate_ppm_file(size, nb_points_tot, nb_float):
+    " Generate a ppm file with the corresponding image"
+    # conversion arbitrary unit to pixel
+    list_image = size * size * [None]
+    dictionnary_points = dictionnary_none(size)
+    length = int(0.2*size/(nb_float+1))
+    height = int(length*1.2)
+    start = int((size/2)*size + size/3 +1)
     for repetition in range(0, 10):
         approxpi = approximate_pi.approximation(int(nb_points_tot/10)*(repetition+1))
-        liste_px = approximate_pi.approximation_liste(int(nb_points_tot/10), taille)
+        list_px = approximate_pi.list_approximation(int(nb_points_tot/10), size)
         approxpi = round(approxpi, nb_float)
-        #création dictionnaire contenant coordonnée  + couleur (tout blanc à start)
+        # creation of dictionary containing coordinate + color (all white to start)
 
 
-        #On change la couleur pour les points qui sont dans la liste_px
-        for points in liste_px:
-            #0 abscsse, 1 ord
-            dictionnaire_points[str(points[0]) + "," + str(points[1])] = points[2]
-        #Faire correspondance entre coord et index sur l'image:
-        for coord in dictionnaire_points:
+        # We change the color for the points that are in the list_px
+        for points in list_px:
+            #0 abscissa, 1 ord
+            dictionnary_points[str(points[0]) + "," + str(points[1])] = points[2]
+        # Match the coordinates to the index on the image:
+        for coord in dictionnary_points:
             x_abs, y_ord = int(str.split(coord, sep=",")[0]), int(str.split(coord, sep=",")[1])
 
-            #inprint(f'Temps d\'exécution : {temps_exec:.2}ms')dexpx = int(y_ord*taille + x+1)
-            liste_image[y_ord*taille + x_abs] = dictionnaire_points[coord]
+            # inprint(f'Temps d\'exécution : {temps_exec:.2}ms')dexpx = int(y_ord*size + x+1)
+            list_image[y_ord*size + x_abs] = dictionnary_points[coord]
 
-        #écriture de pi
-        liste_image_chiffre = ecrire_pi(approxpi, liste_image, depart, hauteur, longueur, taille)
-        #Creation image
+        # Writing of pi
+        list_image_digit = write_pi(approxpi, list_image, start, height, length, size)
+        # Picture creation
         chaine = ""
-        liste_chiffre = [str(approxpi)[k] for k in range(1, len(str(approxpi)))]
-        for k in range(1, len(liste_chiffre)):
-            chaine += liste_chiffre[k]
+        list_digit = [str(approxpi)[k] for k in range(1, len(str(approxpi)))]
+        for k in range(1, len(list_digit)):
+            chaine += list_digit[k]
         nom = f'img{repetition}_{str(approxpi)[0]}-{chaine}.ppm'
-        ecrire_fichier(nom, taille, liste_image_chiffre)
+        write_file(nom, size, list_image_digit)
 
 
 def creation_gif(les_images):
-    "créé un gif à partir des images"
+    "created a gif from the images"
     subprocess.call("convert -delay 50 " + les_images + " result.gif", shell=True)
 
 def main():
     "main"
-    #taille: argv[1], nbpoint: argv[2], nbfloat: argv[3], clean: argv[4]
+    #size of image output: argv[1], nbpoint: argv[2], nbfloat: argv[3], clean: argv[4]
     if len(sys.argv) != 4:
-        print("Erreur, il faut 3 arguments: taille, nb_points, nb_float")
+        print("Error, you need 3 arguments: size, nb_points, nb_float")
         sys.exit(1)
 
     elif int(sys.argv[1]) < 100 or int(sys.argv[2]) < 100 or not 1 <= int(sys.argv[3]) <= 5:
